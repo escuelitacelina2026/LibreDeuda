@@ -69,29 +69,30 @@
             return;
         }
 
-        // Formato de fecha DD/MM/AAAA
         const [y, m, d] = fechaVal.split('-');
         const fechaOk = `${d}/${m}/${y}`;
 
-        // 1. INSERTAR LOGO EN EL PDF
+        // 1. INSERTAR LOGO
         try {
             doc.addImage(logoImg, 'PNG', 15, 15, 65, 15);
         } catch(e) {
-            console.error("Error al cargar imagen en PDF:", e);
+            console.error("Error logo:", e);
         }
 
-        // 2. TÍTULO Y FECHA
+        // 2. FECHA A LA DERECHA
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Fecha de emisión: ${fechaOk}`, 195, 40, { align: "right" });
+
+        // 3. TÍTULO CENTRADO
         doc.setFontSize(18);
         doc.setTextColor(26, 58, 138);
         doc.setFont("helvetica", "bold");
-        doc.text("CERTIFICADO DE LIBRE DEUDA", 105, 50, { align: "center" });
+        doc.text("CERTIFICADO DE LIBRE DEUDA", 105, 55, { align: "center" });
 
+        // 4. CUADRO DE DATOS
         doc.setFontSize(11);
         doc.setTextColor(0, 0, 0);
-        doc.setFont("helvetica", "normal");
-        doc.text(`Fecha de emisión: ${fechaOk}`, 150, 65);
-
-        // 3. CUADRO DE DATOS
         doc.setFont("helvetica", "bold");
         doc.text("DATOS DEL ASEGURADO Y PÓLIZA", 20, 85);
         doc.line(20, 87, 190, 87);
@@ -101,21 +102,20 @@
         doc.text(`Ramo: ${ramo}`, 20, 107);
         doc.text(`Nro. de Póliza: ${poliza}`, 20, 117);
 
-        // 4. LEYENDA CENTRAL
-        doc.setFontSize(12);
+        // 5. LEYENDA CENTRALIZADA
+        doc.setFontSize(13);
         doc.setFont("helvetica", "bold");
-        doc.text("Por el presente certificado se informa que la póliza de referencia", 20, 140);
-        doc.text("a la fecha no registra deuda.", 20, 148);
+        doc.text("Por el presente certificado se informa que la póliza de referencia", 105, 145, { align: "center" });
+        doc.text("a la fecha no registra deuda.", 105, 153, { align: "center" });
 
-        // 5. PIE DE PÁGINA EXCLUSIVO (CELINA BRÓKER)
+        // 6. PIE DE PÁGINA CENTRALIZADO Y CORREGIDO [Ajuste solicitado]
         doc.setFontSize(9);
         doc.setFont("helvetica", "italic");
         doc.setTextColor(80, 80, 80);
         
-        const textoPie = "Este certificado de libre deuda, se emite exclusivamente cuando no hay saldo deudor en la poliza del asegurado. Se acompaña a la poliza original - Celina Bróker de Seguros";
+        const textoPie = "Este certificado de libre deuda, se emite exclusivamente cuando no hay saldo deudor en la poliza del asegurado. - Celina Bróker de Seguros";
         
-        const lineasPie = doc.splitTextToSize(textoPie, 170);
-        doc.text(lineasPie, 105, 270, { align: "center" });
+        doc.text(textoPie, 105, 275, { align: "center" });
 
         // Guardar archivo
         doc.save(`LibreDeuda_${asegurado}.pdf`);
