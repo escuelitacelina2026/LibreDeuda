@@ -5,15 +5,15 @@
     <title>Libre Deuda - Celina Bróker</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; padding: 40px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; padding: 40px; }
         .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 480px; border-top: 6px solid #1a3a8a; }
         .logo-area { text-align: center; margin-bottom: 20px; }
-        .logo-area img { width: 320px; height: auto; }
-        h2 { color: #1a3a8a; text-align: center; text-transform: uppercase; font-size: 20px; margin-bottom: 25px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 6px; font-size: 14px; color: #444; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .btn-generar { width: 100%; background: #1a3a8a; color: white; border: none; padding: 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; transition: 0.3s; }
+        .logo-area img { width: 300px; height: auto; }
+        h2 { color: #1a3a8a; text-align: center; text-transform: uppercase; font-size: 18px; margin-bottom: 20px; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; color: #444; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .btn-generar { width: 100%; background: #1a3a8a; color: white; border: none; padding: 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
         .btn-generar:hover { background: #0e245a; }
     </style>
 </head>
@@ -72,55 +72,56 @@
         const [y, m, d] = fechaVal.split('-');
         const fechaOk = `${d}/${m}/${y}`;
 
-        // 1. INSERTAR LOGO
-        try {
-            doc.addImage(logoImg, 'PNG', 15, 15, 65, 15);
-        } catch(e) {
-            console.error("Error logo:", e);
-        }
+        // 1. LOGO (Ubicación compacta)
+        try { doc.addImage(logoImg, 'PNG', 15, 12, 55, 12); } catch(e) {}
 
-        // 2. FECHA A LA DERECHA
+        // 2. FECHA (Alineada a la derecha)
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
-        doc.text(`Fecha de emisión: ${fechaOk}`, 195, 40, { align: "right" });
+        doc.text(`Fecha de emisión: ${fechaOk}`, 195, 35, { align: "right" });
 
-        // 3. TÍTULO CENTRADO
-        doc.setFontSize(18);
+        // 3. TÍTULO
+        doc.setFontSize(16);
         doc.setTextColor(26, 58, 138);
         doc.setFont("helvetica", "bold");
-        doc.text("CERTIFICADO DE LIBRE DEUDA", 105, 55, { align: "center" });
+        doc.text("CERTIFICADO DE LIBRE DEUDA", 105, 50, { align: "center" });
 
-        // 4. CUADRO DE DATOS
-        doc.setFontSize(11);
+        // 4. BLOQUE DE DATOS (Más compacto)
+        doc.setFontSize(10);
         doc.setTextColor(0, 0, 0);
         doc.setFont("helvetica", "bold");
-        doc.text("DATOS DEL ASEGURADO Y PÓLIZA", 20, 85);
-        doc.line(20, 87, 190, 87);
+        doc.text("DATOS DE COBERTURA", 20, 65);
+        doc.line(20, 67, 190, 67);
         
         doc.setFont("helvetica", "normal");
-        doc.text(`Asegurado: ${asegurado}`, 20, 97);
-        doc.text(`Ramo: ${ramo}`, 20, 107);
-        doc.text(`Nro. de Póliza: ${poliza}`, 20, 117);
+        doc.text(`Asegurado: ${asegurado}`, 20, 75);
+        doc.text(`Ramo: ${ramo}`, 20, 82);
+        doc.text(`Nro. de Póliza: ${poliza}`, 20, 89);
 
-        // 5. LEYENDA CENTRALIZADA - ESTILO ARMONIOSO Y CURSIVO [Ajuste solicitado]
-        doc.setFontSize(14);
-        doc.setFont("times", "italic"); // Fuente Serif para mayor profesionalismo
-        doc.text("Por el presente certificado se informa que la póliza de referencia", 105, 145, { align: "center" });
-        doc.text("a la fecha no registra deuda.", 105, 153, { align: "center" });
+        // 5. LEYENDA CENTRAL (Unificada y Estilizada)
+        // Usamos una fuente Serif (Times) pero con un espaciado y tamaño que la hace ver mejor
+        doc.setFontSize(13);
+        doc.setFont("times", "italic");
+        const textoPrincipal = "Por el presente certificado se informa que la póliza de referencia a la fecha no registra deuda.";
+        // splitTextToSize evita que se corte raro y lo mantiene profesional
+        const lineasTexto = doc.splitTextToSize(textoPrincipal, 150);
+        doc.text(lineasTexto, 105, 115, { align: "center" });
 
-        // 6. PIE DE PÁGINA - CELINA BROKER ABAJO Y CENTRADO [Ajuste solicitado]
-        doc.setFontSize(10);
+        // 6. PIE DE PÁGINA (Estructura jerárquica)
+        doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
-        doc.setTextColor(100, 100, 100);
+        doc.setTextColor(120, 120, 120);
         
-        const linea1 = "Este certificado de libre deuda, se emite exclusivamente cuando no hay saldo deudor en la póliza del asegurado.";
-        const linea2 = "Celina Bróker de Seguros";
+        const nota = "Este certificado de libre deuda, se emite exclusivamente cuando no hay saldo deudor en la póliza del asegurado.";
+        const broker = "Celina Bróker de Seguros";
         
-        doc.text(linea1, 105, 270, { align: "center" });
-        doc.setFont("helvetica", "bold"); // Ponemos el nombre del bróker en negrita
-        doc.text(linea2, 105, 277, { align: "center" });
+        doc.text(nota, 105, 270, { align: "center" });
+        
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(26, 58, 138); // Azul para que resalte tu marca
+        doc.text(broker, 105, 278, { align: "center" });
 
-        // Guardar archivo
         doc.save(`LibreDeuda_${asegurado}.pdf`);
     }
 </script>
