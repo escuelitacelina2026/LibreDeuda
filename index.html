@@ -2,42 +2,41 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador Libre Deuda - Celina</title>
+    <title>Certificado Libre Deuda - Celina</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 40px; }
-        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        .logo-box { text-align: center; margin-bottom: 20px; }
-        .logo-box img { width: 300px; height: auto; } /* Logo alargado */
-        h2 { color: #1a3a8a; text-align: center; text-transform: uppercase; font-size: 18px; }
-        .field { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .btn { width: 100%; background: #1a3a8a; color: white; border: none; padding: 15px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        .logo { text-align: center; margin-bottom: 20px; }
+        .logo img { width: 300px; height: auto; }
+        h2 { color: #1a3a8a; text-align: center; text-transform: uppercase; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn { width: 100%; background: #1a3a8a; color: white; border: none; padding: 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
         .btn:hover { background: #122a63; }
-        .note { font-size: 12px; color: #666; font-style: italic; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="logo-box">
-        <img src="logo_celina.PNG" alt="Swiss Medical">
+<div class="container">
+    <div class="logo">
+        <img src="logo_celina.PNG" id="imgLogo" alt="Swiss Medical">
     </div>
     
-    <h2>Certificado Libre Deuda</h2>
+    <h2>Libre Deuda</h2>
 
-    <div class="field">
-        <label>Fecha</label>
+    <div class="form-group">
+        <label>Fecha de Emisión</label>
         <input type="date" id="fecha">
     </div>
 
-    <div class="field">
-        <label>Nombre Completo del Asegurado</label>
+    <div class="form-group">
+        <label>Nombre del Asegurado/a</label>
         <input type="text" id="asegurado" placeholder="Ej: VERDI GARCIA ELIMAR">
     </div>
 
-    <div class="field">
+    <div class="form-group">
         <label>Ramo</label>
         <select id="ramo">
             <option value="ACCIDENTES PERSONALES">Accidentes Personales</option>
@@ -46,77 +45,82 @@
         </select>
     </div>
 
-    <div class="field">
+    <div class="form-group">
         <label>Número de Póliza</label>
         <input type="text" id="poliza" placeholder="Ej: 874673">
     </div>
 
-    <button class="btn" onclick="generarPDF()">REALIZAR CERTIFICADO DE LIBRE DEUDA</button>
-    <p class="note">El PDF incluirá automáticamente la leyenda de no registro de deuda.</p>
+    <button class="btn" onclick="descargarPDF()">GENERAR PDF CON LOGO</button>
 </div>
 
 <script>
-    async function generarPDF() {
+    function descargarPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        const fechaVal = document.getElementById('fecha').value;
+        const fechaRaw = document.getElementById('fecha').value;
         const asegurado = document.getElementById('asegurado').value.toUpperCase();
         const ramo = document.getElementById('ramo').value;
         const poliza = document.getElementById('poliza').value;
+        const img = document.getElementById('imgLogo');
 
-        if(!fechaVal || !asegurado || !poliza) {
-            alert("Por favor completa todos los campos.");
+        if(!fechaRaw || !asegurado || !poliza) {
+            alert("Completa todos los campos.");
             return;
         }
 
-        // Formatear fecha a DD/MM/AAAA [Petición del usuario]
-        const f = fechaVal.split('-');
-        const fechaHumana = `${f[2]}/${f[1]}/${f[0]}`;
+        const [y, m, d] = fechaRaw.split('-');
+        const fechaFinal = `${d}/${m}/${y}`;
 
-        // --- CONSTRUCCIÓN DEL PDF ---
-        
-        // Título Principal
+        // 1. Agregar LOGO al PDF
+        try {
+            doc.addImage(img, 'PNG', 15, 15, 60, 15); 
+        } catch (e) {
+            console.error("No se pudo cargar el logo en el PDF", e);
+        }
+
+        // 2. Título
         doc.setFontSize(16);
-        doc.setTextColor(26, 58, 138); // Azul institucional
-        doc.text("CERTIFICADO DE LIBRE DEUDA", 105, 40, { align: "center" });
+        doc.setTextColor(26, 58, 138);
+        doc.setFont("helvetica", "bold");
+        doc.text("CERTIFICADO DE LIBRE DEUDA", 105, 45, { align: "center" });
 
-        // Datos del Asegurado
-        doc.setFontSize(12);
+        // 3. Datos del Cuerpo
+        doc.setFontSize(11);
         doc.setTextColor(0, 0, 0);
         doc.setFont("helvetica", "bold");
-        doc.text("Asegurado", 20, 60);
+        doc.text("Asegurado", 20, 65);
         doc.setFont("helvetica", "normal");
-        doc.text(`Nombre: ${asegurado}`, 20, 68);
+        doc.text(`Nombre: ${asegurado}`, 20, 72);
         
-        // Línea divisoria
-        doc.line(20, 75, 190, 75);
+        doc.line(20, 78, 190, 78); // Línea estética
 
-        // Datos de la Póliza
         doc.setFont("helvetica", "bold");
-        doc.text("Póliza", 20, 85);
+        doc.text("Póliza", 20, 88);
         doc.setFont("helvetica", "normal");
-        doc.text(`Fecha de emisión: ${fechaHumana}`, 20, 93);
-        doc.text(`Nro. de póliza: ${poliza}`, 20, 101);
-        doc.text(`Ramo: ${ramo}`, 20, 109);
+        doc.text(`Fecha de emisión: ${fechaFinal}`, 20, 96);
+        doc.text(`Nro. de póliza: ${poliza}`, 20, 104);
+        doc.text(`Ramo: ${ramo}`, 20, 112);
 
-        // LEYENDA PRINCIPAL [Petición del usuario]
+        // 4. LEYENDA PRINCIPAL
         doc.setFont("helvetica", "bold");
-        doc.text("Por el presente certificado se informa que la póliza de referencia", 20, 125);
-        doc.text("a la fecha no registra deuda.", 20, 132);
+        doc.text("Por el presente certificado se informa que la póliza de referencia", 20, 130);
+        doc.text("a la fecha no registra deuda.", 20, 137);
 
-        // Advertencia (Basada en el PDF original)
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "italic");
-        doc.text("Este certificado tiene carácter de provisorio con una validez de 15 días.", 20, 150);
-
-        // Pie de página simulado
+        // 5. TEXTO ADICIONAL (Basado en el adjunto)
+        doc.setFont("helvetica", "normal");
         doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.text("COMPAÑIA ARGENTINA DE SEGUROS S.A.", 105, 180, { align: "center" });
-        doc.text("Jefe de Suscripción Riesgos Masivos", 105, 185, { align: "center" });
+        const textoLegal = "Esta Cobertura no reemplaza las obligaciones emanadas de la ley 24557 y sus Reglamentaciones. El siguiente certificado se emite bajo las condiciones establecidas en la poliza objeto de cobertura y con plena vigencia de las cláusulas impresas en la misma (cl. 983 Cláusula de cobranza de premio y otras).";
+        const splitTexto = doc.splitTextToSize(textoLegal, 170);
+        doc.text(splitTexto, 20, 155);
 
-        // Descarga
+        // 6. PIE DE PÁGINA (SMG SEGUROS)
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        const piePagina = "SMG Compañía Argentina de Seguros S.A.\nEdificio Blue Sky - Av. del Libertador 1068 (C1112ABN) Buenos Aires\nTel: (54-11) 5239-6300 / Fax: (54-11) 5239-6301 - www.smgseguros.com.ar";
+        doc.text(piePagina, 105, 275, { align: "center" });
+
+        // Guardar
         doc.save(`LibreDeuda_${asegurado}.pdf`);
     }
 </script>
