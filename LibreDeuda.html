@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador - Libre Deuda Celina</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 40px; }
+        .container { background: white; max-width: 500px; margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 8px solid #1a3a8a; }
+        .logo-container { text-align: center; margin-bottom: 20px; }
+        .logo-img { width: 350px; height: auto; object-fit: contain; } /* Logo alargado solicitado */
+        h2 { color: #1a3a8a; text-align: center; font-size: 22px; text-transform: uppercase; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .leyenda-box { background: #fdfdfd; padding: 15px; border: 1px dashed #1a3a8a; border-radius: 6px; margin-top: 20px; font-size: 13px; color: #555; line-height: 1.5; }
+        .btn { width: 100%; background-color: #1a3a8a; color: white; padding: 15px; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .btn:hover { background-color: #122a63; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container">
+        <img src="logo_celina.PNG" alt="Swiss Medical Seguros" class="logo-img">
+    </div>
+
+    <h2>Certificado Libre Deuda</h2>
+
+    <div class="form-group">
+        <label>Fecha de Emisión</label>
+        <input type="date" id="fecha">
+    </div>
+
+    <div class="form-group">
+        <label>Nombre del Asegurado/a</label>
+        <input type="text" id="asegurado" placeholder="Ej: VERDI GARCIA ELIMAR">
+    </div>
+
+    <div class="form-group">
+        <label>Ramo</label>
+        <select id="ramo">
+            <option value="ACCIDENTES PERSONALES">Accidentes Personales</option>
+            <option value="RESPONSABILIDAD CIVIL">Responsabilidad Civil</option>
+            <option value="AUTOMOTOR">Automotor</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Número de Póliza</label>
+        <input type="text" id="poliza" placeholder="Ej: 874673">
+    </div>
+
+    <div class="leyenda-box">
+        <strong>Leyenda Informativa:</strong><br>
+        "Por el presente certificado se informa que la póliza de referencia a la fecha no registra deuda."
+    </div>
+
+    <button class="btn" onclick="generarSimulacion()">REALIZAR CERTIFICADO DE LIBRE DEUDA</button>
+</div>
+
+<script>
+    function generarSimulacion() {
+        const fechaRaw = document.getElementById('fecha').value;
+        const asegurado = document.getElementById('asegurado').value;
+        const ramo = document.getElementById('ramo').value;
+        const poliza = document.getElementById('poliza').value;
+
+        if(!fechaRaw || !asegurado || !poliza) {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
+
+        // Formateo de fecha a DD/MM/AAAA [Pedido del usuario]
+        const partes = fechaRaw.split('-');
+        const fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+        const mensaje = `
+        PROCESANDO PDF...
+        -----------------------------------
+        TÍTULO: CERTIFICADO DE LIBRE DEUDA
+        FECHA: ${fechaFormateada}
+        ASEGURADO: ${asegurado.toUpperCase()}
+        RAMO: ${ramo}
+        PÓLIZA: ${poliza}
+        LEYENDA: Por el presente certificado se informa que la póliza de referencia a la fecha no registra deuda.
+        -----------------------------------
+        `;
+
+        console.log(mensaje);
+        alert("Generando PDF... Verifica los datos en la consola (F12)");
+    }
+</script>
+
+</body>
+</html>
